@@ -1,3 +1,4 @@
 config.py
 virtenv/
 __pycache__/
+.vscode/
