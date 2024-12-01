@@ -1,6 +1,6 @@
 import discord
 import random
-from config import TOKEN, SERVERS
+from config import TOKEN, SERVERS, HOH_ROLE_ID
 from classes import Bot, BotEmbed
 
 bot = Bot()
