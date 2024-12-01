@@ -7,7 +7,7 @@ bot = Bot()
 
 @bot.event
 async def on_ready() -> None:
-	print("\nBot connected and ready to Rock n' Roll !\n")
+	print("\nJulie Chen connected and ready to Rock n' Roll !\n")
 
 @bot.slash_command(guild_ids=SERVERS, name="ping", description="PONG !")
 async def ping(interaction: discord.Interaction) -> None:
