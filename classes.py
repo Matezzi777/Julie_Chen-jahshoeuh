@@ -7,7 +7,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix="!", intents=discord.Intents.all(), description=f"[PUT NAME HERE] v{VERSION} by @matezzi75.", help_command=None)
 
 #==================== COLOURS & INFOS ===================
-BOT_EMBED_RGB = discord.Colour.from_rgb(59, 149, 212)
+BOT_EMBED_RGB = discord.Colour.from_rgb(172, 59, 241)
 
 #======================== EMBEDS ========================
 class BotEmbed(discord.Embed):
