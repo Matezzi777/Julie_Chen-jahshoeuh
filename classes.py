@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from config import VERSION, AUTHOR_ID
+from database import add_confessional, remove_confessional
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -21,3 +22,34 @@ class BotEmbed(discord.Embed):
             description=description,
             timestamp=timestamp)
         self.set_footer(text=f"Julie Chen v{VERSION} by @matezzi75", icon_url="https://avatars.githubusercontent.com/u/146573782?s=400&u=a8b68f52dded16bbbb8b9dcce5004aff0a092b8c&v=4")
+
+#========================= VIEW =========================
+class SetConfView(discord.ui.View):
+    def __init__(self, user: discord.Member, new_channel_id: str):
+        super().__init__(timeout=None)
+        self.add_item(DoNothingButton(user))
+        self.add_item(ModifyConfButton(user, new_channel_id))
+
+#======================== BUTTON ========================
+class DoNothingButton(discord.ui.Button):
+    def __init__(self, user: discord.Member):
+        super().__init__(style=discord.ButtonStyle.green,
+                         label="Do Nothing",
+                         emoji="✅")
+        self.selected_user: discord.Member = user
+        
+    async def callback(self, interaction: discord.Interaction):
+        return await interaction.response.edit_message(embed=BotEmbed(title="CONFESSIONAL UNCHANGED", description=f"{self.selected_user.mention}'s confessional unchanged.", colour=discord.Colour.green()), view=None)
+
+class ModifyConfButton(discord.ui.Button):
+    def __init__(self, user: discord.Member, new_channel_id: str):
+        super().__init__(style=discord.ButtonStyle.blurple,
+                         label="Modify",
+                         emoji="♻️")
+        self.selected_user: discord.Member = user
+        self.new_channel_id: str = new_channel_id
+        
+    async def callback(self, interaction: discord.Interaction):
+        remove_confessional(self.selected_user)
+        add_confessional(self.selected_user, self.new_channel_id)
+        return await interaction.response.edit_message(embed=BotEmbed(title="CONFESSIONAL MODIFIED", description=f"{self.selected_user.mention}'s confessional successfuly modified.", colour=discord.Colour.green()), view=None)

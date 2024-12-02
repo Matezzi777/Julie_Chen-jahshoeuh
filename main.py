@@ -1,7 +1,7 @@
 import discord
 import random
 from config import TOKEN, SERVERS, HOH_ROLE_ID
-from classes import Bot, BotEmbed
+from classes import Bot, BotEmbed, SetConfView
 from database import *
 
 bot = Bot()
@@ -31,6 +31,8 @@ async def crownhoh(interaction: discord.Interaction, user: discord.Member = disc
 					"https://i.imgur.com/mGYTz.gif"]
 	chosen_gif: str = gifs[random.randint(0, 4)]
 	embed.image = chosen_gif
+	hoh_role: discord.Role = interaction.guild.get_role(HOH_ROLE_ID)
+	await user.add_roles(hoh_role, reason="Won the HoH")
 	await interaction.response.send_message(embed=embed)
 
 @bot.slash_command(guild_ids=SERVERS, name="vetowinner", description="Select the Power of Veto winner.")
@@ -43,9 +45,16 @@ async def vetowinner(interaction: discord.Interaction, user: discord.Member = di
 @bot.slash_command(guild_ids=SERVERS, name="set_confessional", description="Set a Text Channel as a confessional for the given user")
 async def set_confessional(interaction: discord.Interaction,
 						   user: discord.Member = discord.Option(discord.Member, description="The user to link to a confessional", required=True),
-						   channel_id: discord.TextChannel = discord.Option(int, description="The ID of the confessional of the user", required=True)) -> None:
+						   channel_id: discord.TextChannel = discord.Option(str, description="The ID of the confessional of the user", required=True)) -> None:
 	print(f"COMMAND : /set_confessional used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
-	...
+	if (is_user_in_database(user)):
+		embed = BotEmbed(title="CONFESSIONAL ALREADY SET", description=f"A confessional is already stored in the database for {user.mention} (#{interaction.guild.get_channel(get_confessional(user)).name})")
+		embed.add_field(name="Do you want to change it ?", value=" ✅ Do nothing.\n ♻️ Modify with the new channel.", inline=False)
+		view: discord.ui.View = SetConfView(user, channel_id)
+		await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+	else:
+		add_confessional(user, channel_id)
+		await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL ADDED", description=f"New confessional linked for {user.mention} (#{interaction.guild.get_channel(channel_id).name}).", colour=discord.Colour.green()), ephemeral=True)
 
 @bot.slash_command(guild_ids=SERVERS, name="unlink_confessional", description="Unlink the user to the confessional associated")
 async def unlink_confessional(interaction: discord.Interaction,

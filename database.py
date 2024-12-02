@@ -3,7 +3,7 @@ import sqlite3
 
 #################### CONFESSIONALS ####################
 
-async def add_confessional(user: discord.Member, channel_id: int) -> None:
+def add_confessional(user: discord.Member, channel_id: str) -> None:
 	connexion = sqlite3.connect('sqlite.db')
 	cursor = connexion.cursor()
 	request: str = f"INSERT INTO Confessionals VALUES ({user.id}, {channel_id})"
@@ -11,7 +11,7 @@ async def add_confessional(user: discord.Member, channel_id: int) -> None:
 	connexion.commit()
 	connexion.close()
 
-async def remove_confessional(user: discord.Member) -> None:
+def remove_confessional(user: discord.Member) -> None:
 	connexion = sqlite3.connect('sqlite.db')
 	cursor = connexion.cursor()
 	request: str = f"DELETE FROM Confessionals WHERE User_ID={user.id}"
@@ -19,7 +19,15 @@ async def remove_confessional(user: discord.Member) -> None:
 	connexion.commit()
 	connexion.close()
 
-
+def get_confessional(user: discord.Member) -> int:
+	connexion = sqlite3.connect('sqlite.db')
+	cursor = connexion.cursor()
+	request: str = f"SELECT Channel_ID FROM Confessionals WHERE ID={user.id}"
+	cursor.execute(request)
+	connexion.commit()
+	confessional_id: int = cursor.fetchone()[0]
+	connexion.close()
+	return (confessional_id)
 
 #################### CONFIGURATION ####################
 
@@ -40,7 +48,17 @@ def set_embed_rgb(id: int, red: int, green: int, blue: int) -> bool:
 #################### ACCESS (READ) ####################
 
 def is_user_in_database(user: discord.Member) -> bool:
-	...
+	connexion = sqlite3.connect('sqlite.db')
+	cursor = connexion.cursor()
+	request: str = f"SELECT * FROM Confessionals WHERE User_ID={user.id}"
+	cursor.execute(request)
+	connexion.commit()
+	result: int = cursor.fetchone()
+	connexion.close()
+	if (result):
+		return (True)
+	else:
+		return (False)
 
 def get_r(id: int) -> int:
 	connexion = sqlite3.connect('sqlite.db')
