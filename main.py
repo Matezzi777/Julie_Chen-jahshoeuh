@@ -1,6 +1,6 @@
 import discord
 import random
-from config import TOKEN, SERVERS, HOH_ROLE_ID, GAME_UPDATE_ROLE_ID, KEYS_CHANNEL_ID, GAMES_UPDATES_CHANNEL_ID
+from config import TOKEN, SERVERS, HOH_ROLE_ID, VETO_WINNER_ROLE_ID, GAME_UPDATE_ROLE_ID, KEYS_CHANNEL_ID, NOMINATIONS_CHANNEL_ID, GAMES_UPDATES_CHANNEL_ID
 from classes import Bot, BotEmbed, SetConfView, UnlinkConfView
 from database import *
 
@@ -47,7 +47,27 @@ async def crownhoh(interaction: discord.Interaction, user: discord.Member = disc
 @bot.slash_command(guild_ids=SERVERS, name="vetowinner", description="Select the Power of Veto winner.")
 async def vetowinner(interaction: discord.Interaction, user: discord.Member = discord.Option(discord.Member, description="The member who won the Power of Veto", required=True)) -> None:
 	print(f"COMMAND : /vetowinner used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
-	...
+	if (not is_user_in_database(user)):
+		return await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL MISSING", description=f"{user.mention} has no confessional linked. Please use **/set_confessional** before to use this function."))
+	colour: discord.Colour = discord.Colour.from_rgb(get_r(2), get_g(2), get_b(2))
+	embed = BotEmbed(title="Power Of Veto Winner", description=f"{user.mention} Has Won The Power Of Veto! <:VETO:1267586074289373224>", colour=colour)
+	gifs: list[str] = ["https://c.tenor.com/InPakYHS3FAAAAAM/lulugifs-bballstars.gif",
+					"https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnFoNnBwd2F2MzNrN3hlNW53ZmdpaWg3ZDh3MHl2eGhtYjh4eXdpciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/elhfetq3eLwte7kJkC/giphy.gif",
+					"https://vignette.wikia.nocookie.net/703-org-network/images/8/84/BritneyVeto.gif",
+					"https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDdnenBlZ2NlOXdxcWpxamx1ZnkxbzFxaHJncDdncTFhOWtzdXFyayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ByMWcN23jcRNa3L8Zd/giphy.gif",
+					"https://media1.giphy.com/media/U2mzmvGtDcSMo/200w.gif?cid=6c09b9525f3nzvwojnaru0dql7xmwgkqld43yq6km8a8ili8&ep=v1_internal_gif_by_id&rid=200w.gif&ct=g"]
+	chosen_gif: str = gifs[random.randint(0, 4)]
+	embed.image = chosen_gif
+	vetowinner_role: discord.Role = interaction.guild.get_role(VETO_WINNER_ROLE_ID)
+	await user.add_roles(vetowinner_role, reason="Won the Power of Veto")
+	confessional: discord.TextChannel = interaction.guild.get_channel(int(get_confessional(user)))
+	confessional_embed = BotEmbed(title="__**POWER OF VETO WINNER**__ <:VETO:1267586074289373224>", description=f"{user.mention} Congratulations on winning the Golden Power of **Veto** this week!\n\nYou now have the option of saving one of the nominees OR leaving them in place!\n\nPlease make your decision in {interaction.guild.get_channel(NOMINATIONS_CHANNEL_ID).mention}.", colour=colour)
+	confessional_embed.add_field(name="Some things to note :", value="- If you are a Nominee and use it on yourself, you are now safe for the rest of the week.\n- If you aren't a Nominee, you cannot be the replacement nominee if used!", inline=False)
+	confessional_embed.add_field(name="", value="Please Ping with any questions or if you need more time!", inline=False)
+	await confessional.send(embed=confessional_embed)
+	game_updates: discord.TextChannel = interaction.guild.get_channel(int(GAMES_UPDATES_CHANNEL_ID))
+	await game_updates.send(content=f"{interaction.guild.get_role(GAME_UPDATE_ROLE_ID).mention}", embed=embed)
+	return await interaction.response.send_message(embed=embed)
 
 ################### DATABASE ###################
 
