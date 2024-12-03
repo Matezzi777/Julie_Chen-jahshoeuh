@@ -22,7 +22,7 @@ def remove_confessional(user: discord.Member) -> None:
 def get_confessional(user: discord.Member) -> int:
 	connexion = sqlite3.connect('sqlite.db')
 	cursor = connexion.cursor()
-	request: str = f"SELECT Channel_ID FROM Confessionals WHERE ID={user.id}"
+	request: str = f"SELECT Channel_ID FROM Confessionals WHERE User_ID={user.id}"
 	cursor.execute(request)
 	connexion.commit()
 	confessional_id: int = cursor.fetchone()[0]

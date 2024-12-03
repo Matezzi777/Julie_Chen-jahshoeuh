@@ -54,7 +54,7 @@ async def set_confessional(interaction: discord.Interaction,
 		await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 	else:
 		add_confessional(user, channel_id)
-		await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL ADDED", description=f"New confessional linked for {user.mention} (#{interaction.guild.get_channel(channel_id).name}).", colour=discord.Colour.green()), ephemeral=True)
+		await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL ADDED", description=f"New confessional linked for {user.mention} (#{interaction.guild.get_channel(int(channel_id)).name}).", colour=discord.Colour.green()), ephemeral=True)
 
 @bot.slash_command(guild_ids=SERVERS, name="unlink_confessional", description="Unlink the user to the confessional associated")
 async def unlink_confessional(interaction: discord.Interaction,
