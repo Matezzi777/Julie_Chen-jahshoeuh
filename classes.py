@@ -30,6 +30,12 @@ class SetConfView(discord.ui.View):
         self.add_item(DoNothingButton(user))
         self.add_item(ModifyConfButton(user, new_channel_id))
 
+class UnlinkConfView(discord.ui.View):
+    def __init__(self, user: discord.Member):
+        super().__init__(timeout=None)
+        self.add_item(ConfirmButton(user))
+        self.add_item(CancelButton(user))
+
 #======================== BUTTON ========================
 class DoNothingButton(discord.ui.Button):
     def __init__(self, user: discord.Member):
@@ -53,3 +59,24 @@ class ModifyConfButton(discord.ui.Button):
         remove_confessional(self.selected_user)
         add_confessional(self.selected_user, self.new_channel_id)
         return await interaction.response.edit_message(embed=BotEmbed(title="CONFESSIONAL MODIFIED", description=f"{self.selected_user.mention}'s confessional successfuly modified.", colour=discord.Colour.green()), view=None)
+
+class ConfirmButton(discord.ui.Button):
+    def __init__(self, user: discord.Member):
+        super().__init__(style=discord.ButtonStyle.green,
+                         label="Confirm",
+                         emoji="✅")
+        self.selected_user: discord.Member = user
+
+    async def callback(self, interaction: discord.Interaction):
+        remove_confessional(self.selected_user)
+        return await interaction.response.edit_message(embed=BotEmbed(title="CONFESSIONAL REMOVED", description=f"{self.selected_user.mention}'s confessional removed from database.", colour=discord.Colour.green()), view=None)
+
+class CancelButton(discord.ui.Button):
+    def __init__(self, user: discord.Member):
+        super().__init__(style=discord.ButtonStyle.red,
+                         label="Cancel",
+                         emoji="❌")
+        self.selected_user: discord.Member = user
+
+    async def callback(self, interaction: discord.Interaction):
+        return await interaction.response.edit_message(embed=BotEmbed(title="CONFESSIONAL UNCHANGED", description=f"{self.selected_user.mention}'s confessional unchanged", colour=discord.Colour.green()), view=None)

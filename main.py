@@ -1,7 +1,7 @@
 import discord
 import random
 from config import TOKEN, SERVERS, HOH_ROLE_ID
-from classes import Bot, BotEmbed, SetConfView
+from classes import Bot, BotEmbed, SetConfView, UnlinkConfView
 from database import *
 
 bot = Bot()
@@ -63,7 +63,12 @@ async def set_confessional(interaction: discord.Interaction,
 async def unlink_confessional(interaction: discord.Interaction,
 							  user: discord.Member = discord.Option(discord.Member, description="The user to remove from the database", required=True)) -> None:
 	print(f"COMMAND : /unlink_confessional used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
-	...
+	if (not is_user_in_database(user)):
+		await interaction.response.send_message(embed=BotEmbed(title="NO CONFESSIONAL LINKED", description=f"No confessional found in the database for {user.mention}."))
+	else:
+		embed = BotEmbed(title="UNLINK CONFESSIONAL ?", description=f"Do you really want to unlink {user.mention}'s confessional ?\nIf you just want to modify the confessional's channel, you can just use **/set_confessional** with the ID of the new confessional.")
+		view = UnlinkConfView(user)
+		await interaction.response.send_message(embed=embed, view=view)
 
 @bot.slash_command(guild_ids=SERVERS, name="display_confessionals", description="Show the list of the users linked to a confessional")
 async def display_confessionals(interaction: discord.Interaction) -> None:
