@@ -29,6 +29,27 @@ def get_confessional(user: discord.Member) -> int:
 	connexion.close()
 	return (confessional_id)
 
+def get_nb_confessionals() -> int:
+	connexion = sqlite3.connect('sqlite.db')
+	cursor = connexion.cursor()
+	request: str = f"SELECT * FROM Confessionals"
+	cursor.execute(request)
+	connexion.commit()
+	confessionals: list = cursor.fetchall()
+	nb_confessionals: int = len(confessionals)
+	connexion.close()
+	return (nb_confessionals)
+
+def get_confessionals_list() -> list:
+	connexion = sqlite3.connect('sqlite.db')
+	cursor = connexion.cursor()
+	request: str = f"SELECT * FROM Confessionals"
+	cursor.execute(request)
+	connexion.commit()
+	confessionals: list = cursor.fetchall()
+	connexion.close()
+	return (confessionals)
+
 #################### CONFIGURATION ####################
 
 def set_embed_rgb(id: int, red: int, green: int, blue: int) -> bool:

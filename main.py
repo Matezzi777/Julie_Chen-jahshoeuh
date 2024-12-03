@@ -72,8 +72,18 @@ async def unlink_confessional(interaction: discord.Interaction,
 
 @bot.slash_command(guild_ids=SERVERS, name="display_confessionals", description="Show the list of the users linked to a confessional")
 async def display_confessionals(interaction: discord.Interaction) -> None:
-	print(f"COMMAND : /unlink_confessional used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
-	...
+	print(f"COMMAND : /display_confessionals used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
+	nb_confessionals: int = get_nb_confessionals()
+	if (nb_confessionals == 0):
+		return await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONALS LIST", description=f"No players linked to confessionals for now."))
+	elif (nb_confessionals == 1):
+		embed = BotEmbed(title="CONFESSIONALS LIST", description=f"**{nb_confessionals}** player linked to confessionals :")
+	else:
+		embed = BotEmbed(title="CONFESSIONALS LIST", description=f"**{nb_confessionals}** players linked to confessionals :")
+	confessionals: list = get_confessionals_list()
+	for element in confessionals:
+		embed.add_field(name=f"", value=f"{interaction.guild.get_member(int(element[0])).mention}	---	{interaction.guild.get_channel(int(element[1])).mention}", inline=False)
+	return await interaction.response.send_message(embed=embed)
 
 #################### CONFIG ####################
 

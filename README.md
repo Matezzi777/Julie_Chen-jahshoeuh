@@ -10,6 +10,6 @@ DM me on Discord for your own custom bot **@matezzi75**
 #### Management commands :
 - ✅ /set_confessional : Set a Text Channel as a confessional for the given user.
 - ✅ /unlink_confessional : Unlink the user to the confessional associated.
-- /display_confessionals : Show the list of the users linked to a confessional.
+- ✅ /display_confessionals : Show the list of the users linked to a confessional.
 - ✅ /set_hoh_rgb : Change the color of the HoH embeds.
 - ✅ /set_veto_rgb = Change the color of the Veto embeds.
