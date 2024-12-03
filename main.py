@@ -1,6 +1,6 @@
 import discord
 import random
-from config import TOKEN, SERVERS, HOH_ROLE_ID
+from config import TOKEN, SERVERS, HOH_ROLE_ID, GAME_UPDATE_ROLE_ID, KEYS_CHANNEL_ID, GAMES_UPDATES_CHANNEL_ID
 from classes import Bot, BotEmbed, SetConfView, UnlinkConfView
 from database import *
 
@@ -22,6 +22,8 @@ async def ping(interaction: discord.Interaction) -> None:
 @bot.slash_command(guild_ids=SERVERS, name="crownhoh", description="Select the Head of Household winner.")
 async def crownhoh(interaction: discord.Interaction, user: discord.Member = discord.Option(discord.Member, description="The member who won the Head of Household", required=True)) -> None:
 	print(f"COMMAND : /crownhoh used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
+	if (not is_user_in_database(user)):
+		return await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL MISSING", description=f"{user.mention} has no confessional linked. Please use **/set_confessional** before to use this function."))
 	colour: discord.Colour = discord.Colour.from_rgb(get_r(1), get_g(1), get_b(1))
 	embed = BotEmbed(title="Head Of Household Winner <:HOH:1267582814082302004>", description=f"{user.mention} Has Won Head Of Household!", colour=colour)
 	gifs: list[str] = ["https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXo0a2NjbXRrb3lyNHk2dzMzY2kzeDIyN3gxaWN0am02M2ZnOW9oZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/05No0Hw1hWyAEPNWDA/giphy.gif",
@@ -33,7 +35,14 @@ async def crownhoh(interaction: discord.Interaction, user: discord.Member = disc
 	embed.image = chosen_gif
 	hoh_role: discord.Role = interaction.guild.get_role(HOH_ROLE_ID)
 	await user.add_roles(hoh_role, reason="Won the HoH")
-	await interaction.response.send_message(embed=embed)
+	confessional: discord.TextChannel = interaction.guild.get_channel(int(get_confessional(user)))
+	confessional_embed = BotEmbed(title="__**HEAD OF HOUSEHOLD**__ <:HOH:1267582814082302004>", description=f"{user.mention} Congratulations on winning **Head of Household** this week!\n\nAs Head of Household, you must name two houseguests for eviction!\nHead over to {interaction.guild.get_channel(KEYS_CHANNEL_ID).mention} and read up on how to make your nominations!", colour=colour)
+	confessional_embed.add_field(name="Some things to note :", value="- You are safe this week.\n- If the Power of Veto is used, you must name a replacement.", inline=False)
+	confessional_embed.add_field(name="", value="Please Ping with any questions or if you need more time!", inline=False)
+	await confessional.send(embed=confessional_embed)
+	game_updates: discord.TextChannel = interaction.guild.get_channel(int(GAMES_UPDATES_CHANNEL_ID))
+	await game_updates.send(content=f"{interaction.guild.get_role(GAME_UPDATE_ROLE_ID).mention}", embed=embed)
+	return await interaction.response.send_message(embed=embed)
 
 @bot.slash_command(guild_ids=SERVERS, name="vetowinner", description="Select the Power of Veto winner.")
 async def vetowinner(interaction: discord.Interaction, user: discord.Member = discord.Option(discord.Member, description="The member who won the Power of Veto", required=True)) -> None:
