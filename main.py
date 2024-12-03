@@ -48,10 +48,13 @@ async def set_confessional(interaction: discord.Interaction,
 						   channel_id: discord.TextChannel = discord.Option(str, description="The ID of the confessional of the user", required=True)) -> None:
 	print(f"COMMAND : /set_confessional used by @{interaction.user.name} in {interaction.guild.name} (#{interaction.channel.name})")
 	if (is_user_in_database(user)):
-		embed = BotEmbed(title="CONFESSIONAL ALREADY SET", description=f"A confessional is already stored in the database for {user.mention} (#{interaction.guild.get_channel(get_confessional(user)).name})")
-		embed.add_field(name="Do you want to change it ?", value=" ✅ Do nothing.\n ♻️ Modify with the new channel.", inline=False)
-		view: discord.ui.View = SetConfView(user, channel_id)
-		await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+		if (get_confessional(user) == int(channel_id)):
+			await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL ALREADY SET", description=f"{user.mention} is already linked to #{interaction.guild.get_channel(int(channel_id)).name}."))
+		else:
+			embed = BotEmbed(title="CONFESSIONAL ALREADY SET", description=f"A confessional is already stored in the database for {user.mention} (#{interaction.guild.get_channel(get_confessional(user)).name})")
+			embed.add_field(name="Do you want to change it ?", value=" ✅ Do nothing.\n ♻️ Modify with the new channel.", inline=False)
+			view: discord.ui.View = SetConfView(user, channel_id)
+			await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 	else:
 		add_confessional(user, channel_id)
 		await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL ADDED", description=f"New confessional linked for {user.mention} (#{interaction.guild.get_channel(int(channel_id)).name}).", colour=discord.Colour.green()), ephemeral=True)
