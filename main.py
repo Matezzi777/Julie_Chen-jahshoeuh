@@ -25,7 +25,7 @@ async def crownhoh(interaction: discord.Interaction, user: discord.Member = disc
 	if (not is_user_in_database(user)):
 		return await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL MISSING", description=f"{user.mention} has no confessional linked. Please use **/set_confessional** before to use this function."))
 	colour: discord.Colour = discord.Colour.from_rgb(get_r(1), get_g(1), get_b(1))
-	message = await interaction.response.send_message(embed=BotEmbed(title="LOADING...", description="<a:icons8sablierfond:1261108677679780033> Loading <a:icons8sablierfond:1261108677679780033>", colour=colour))
+	message = await interaction.response.send_message(embed=BotEmbed(title="LOADING...", description="⌛ Loading ⏳", colour=colour))
 	embed = BotEmbed(title="Head Of Household Winner <:HOH:1267582814082302004>", description=f"{user.mention} Has Won Head Of Household!", colour=colour)
 	gifs: list[str] = ["https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXo0a2NjbXRrb3lyNHk2dzMzY2kzeDIyN3gxaWN0am02M2ZnOW9oZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/05No0Hw1hWyAEPNWDA/giphy.gif",
 					"https://media1.tenor.com/images/e5c7b812d290ec41846b17532eb812e7/tenor.gif?itemid=5308822",
@@ -51,7 +51,7 @@ async def vetowinner(interaction: discord.Interaction, user: discord.Member = di
 	if (not is_user_in_database(user)):
 		return await interaction.response.send_message(embed=BotEmbed(title="CONFESSIONAL MISSING", description=f"{user.mention} has no confessional linked. Please use **/set_confessional** before to use this function."))
 	colour: discord.Colour = discord.Colour.from_rgb(get_r(2), get_g(2), get_b(2))
-	message = await interaction.response.send_message(embed=BotEmbed(title="LOADING...", description="<a:icons8sablierfond:1261108677679780033> Loading <a:icons8sablierfond:1261108677679780033>", colour=colour))
+	message = await interaction.response.send_message(embed=BotEmbed(title="LOADING...", description="⌛ Loading ⏳", colour=colour))
 	embed = BotEmbed(title="Power Of Veto Winner", description=f"{user.mention} Has Won The Power Of Veto! <:VETO:1267586074289373224>", colour=colour)
 	gifs: list[str] = ["https://c.tenor.com/InPakYHS3FAAAAAM/lulugifs-bballstars.gif",
 					"https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnFoNnBwd2F2MzNrN3hlNW53ZmdpaWg3ZDh3MHl2eGhtYjh4eXdpciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/elhfetq3eLwte7kJkC/giphy.gif",
