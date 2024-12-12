@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import VERSION, AUTHOR_ID
+from config import VERSION
 from database import add_confessional, remove_confessional
 
 class Bot(commands.Bot):
